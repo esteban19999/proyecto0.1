@@ -22,20 +22,21 @@ public class VentanaControlUsuarios extends javax.swing.JFrame {
         cargarUsuarios();
     }
     
-    private void cargarUsuarios(){
-        String[] nombresColumnas = {"Nombre", "Contraseña", "Rol"};
-        var conexion = Datos.getInstancia().getConexion();
-        var dao = new UsuarioDAO(conexion);
-        var usuarios = dao.listar();
-        var model = new DefaultTableModel(nombresColumnas, 0);
-        
-        for(Usuario u : usuarios){
-            Object[] fila = {u.getNombre(), u.getPassword(), u.getRol()};
-            model.addRow(fila);
-        }
-        
-        tablaUsuarios.setModel(model);        
+    private void cargarUsuarios() {
+    String[] nombresColumnas = {"ID", "Nombre", "Contraseña", "Rol"};
+    var conexion = Datos.getInstancia().getConexion();
+    var dao = new UsuarioDAO(conexion);
+    var usuarios = dao.listar();
+    var model = new DefaultTableModel(nombresColumnas, 0);
+
+    for (Usuario u : usuarios) {
+        Object[] fila = {u.getIdUsuario(), u.getNombre(), u.getPassword(), u.getRol()};
+        model.addRow(fila);
     }
+
+    tablaUsuarios.setModel(model);
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -289,9 +290,31 @@ public class VentanaControlUsuarios extends javax.swing.JFrame {
 
     private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
         // TODO add your handling code here:
-        ventanaSeleccionar.setVisible(true);
-        labelFrame.setText("Seleccione el usuario a eliminar");
-        accionEliminar = true;
+       
+    int filaSeleccionada = tablaUsuarios.getSelectedRow();
+    
+    if (filaSeleccionada == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor seleccione un usuario de la tabla");
+        return;
+    }
+    
+    int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este usuario?", "Confirmar", javax.swing.JOptionPane.YES_NO_OPTION);
+    
+    if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+        int idUsuario = Integer.parseInt(tablaUsuarios.getValueAt(filaSeleccionada, 0).toString());
+        var conexion = Datos.getInstancia().getConexion();
+        var dao = new UsuarioDAO(conexion);
+        
+        if (dao.eliminar(idUsuario)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Usuario eliminado con éxito");
+            cargarUsuarios();
+            ventanaSeleccionar.setVisible(false);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al eliminar el usuario");
+        }
+    }
+
+
     }//GEN-LAST:event_botonEliminarActionPerformed
 
     /**

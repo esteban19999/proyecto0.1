@@ -135,5 +135,31 @@ public class UsuarioDAO implements DAO {
 
         return null;         
     }
+        public Usuario getUsuarioPorNombre(String nombre) {
+        String sql = "SELECT * FROM usuarios WHERE nombre = ?";
+        
+        try {
+            var ps = conexion.prepareStatement(sql);
+            ps.setString(1, nombre);
+            
+            var rs = ps.executeQuery();
+            
+            if(rs.next()){
+                Usuario usuario = new Usuario();
+                
+                usuario.setIdUsuario(rs.getInt("idUsuario"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setPassword(rs.getString("password"));
+                usuario.setRol(Rol.valueOf(rs.getString("rol")));
+                usuario.setImagenURL(rs.getString("imagenURL"));
+                
+                return usuario;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        } 
 
-}
+        return null;         
+    }
+    
+    }

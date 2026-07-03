@@ -4,55 +4,56 @@
  */
 package com.mycompany.sistemaacademico;
 
-import com.mycompany.sistemaacademico.*;
-
-
 public class VentanaDocente extends javax.swing.JFrame {
+    
+    private java.sql.Connection conexion;
+    private int idDocente;
+
+    public VentanaDocente(java.sql.Connection conexion, int idDocente) {
+        initComponents();
+        this.conexion = conexion;
+        this.idDocente = idDocente;
+        cargarMateriasDocente();
+    }
+
+    private void cargarMateriasDocente() {
+        String[] columnas = {"Código", "Nombre de la Materia"};
+        javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        String sql = "SELECT m.codigo, m.nombre FROM materias m " +
+                     "INNER JOIN docente_materias dm ON m.id = dm.materia_id " +
+                     "WHERE dm.docente_id = ? " +
+                     "OR dm.docente_id = (SELECT id FROM docentes WHERE nombre = (SELECT nombre FROM usuarios WHERE idUsuario = ? LIMIT 1) LIMIT 1)";
+
+        try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql)) {
+            ps.setInt(1, this.idDocente);
+            ps.setInt(2, this.idDocente);
+            
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String codigo = rs.getString("codigo");
+                    String nombre = rs.getString("nombre");
+                    Object[] fila = {codigo, nombre};
+                    modelo.addRow(fila);
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error al cargar materias: " + e.getMessage());
+        }
+
+        tablaMateriasDocente.setModel(modelo);
+    }
+
 
     /**
-     * Creates new form VentanaDocente
+     * Creates new form VentanaDocenteNueva
      */
-  private java.sql.Connection conexion;
-private int idDocente;
-private void cargarTablaMateriasDocente() {
-    String[] columnas = {"Código", "Nombre de la Materia"};
-    javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0);
-    
-    com.mycompany.sistemaacademico.MateriaDAO mDAO = new com.mycompany.sistemaacademico.MateriaDAO(this.conexion);
-    java.util.ArrayList<String[]> materias = mDAO.obtenerMateriasPorDocente(this.idDocente);
-    
-    for (String[] m : materias) {
-        modelo.addRow(m);
-    }
-    
-    
-    tablaMaterias.setModel(modelo); 
-}
 
-
-public VentanaDocente(java.sql.Connection conexion, int idDocente) {
-    initComponents();
-    this.conexion = conexion;
-    this.idDocente = idDocente;
-    cargarTablaMateriasDocente();
-}
-
-}
-private void cargarMateriasAsignadas() {
-    String[] columnas = {"Mis Materias Asignadas"};
-    javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    var materias = Datos.getInstancia().getUsuarioActual().getMaterias();
-    for (String m : materias) {
-        Object[] fila = {m};
-        modelo.addRow(fila);
-    }
-    tablaMateriasDocente.setModel(modelo);
-}
 
 
     /**
@@ -64,18 +65,15 @@ private void cargarMateriasAsignadas() {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        labelUsuario = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         botonEstudiantes = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
         botonNiveles = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaMateriasDocente = new javax.swing.JTable();
+        labelUsuario = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        labelUsuario.setText("Hola, Docente!");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 10));
 
@@ -83,6 +81,7 @@ private void cargarMateriasAsignadas() {
         jPanel2.add(botonEstudiantes);
 
         botonSalir.setText("Salir");
+        botonSalir.addActionListener(this::botonSalirActionPerformed);
         jPanel2.add(botonSalir);
 
         botonNiveles.setText("Niveles");
@@ -101,33 +100,7 @@ private void cargarMateriasAsignadas() {
         ));
         jScrollPane1.setViewportView(tablaMateriasDocente);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelUsuario)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 43, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(105, 105, 105))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelUsuario)
-                .addGap(14, 14, 14)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        labelUsuario.setText("Hola, Docente!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -135,64 +108,53 @@ private void cargarMateriasAsignadas() {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelUsuario)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(105, 105, 105))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(labelUsuario)
+                .addGap(14, 14, 14)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaDocente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaDocente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaDocente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaDocente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void botonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSalirActionPerformed
+        // TODO add your handling code here:
+    try{
+    com.mycompany.sistemaacademico.VentanaIngreso login = new com.mycompany.sistemaacademico.VentanaIngreso();
+    login.setLocationRelativeTo(null);
+    login.setVisible(true);
+    this.dispose();
+    }catch (Exception e){
+        System.out.println("error al cerrar sesion: " + e.getMessage());
+}       
+    }//GEN-LAST:event_botonSalirActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new VentanaDocente().setVisible(true);
-            }
-        });
-    }
+
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonEstudiantes;
     private javax.swing.JButton botonNiveles;
     private javax.swing.JButton botonSalir;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelUsuario;
     private javax.swing.JTable tablaMateriasDocente;
     // End of variables declaration//GEN-END:variables
-
+}

@@ -3,11 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.sistemaacademico;
-import com.mycompany.sistemaacademico.*;
-
-
-
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,7 +13,7 @@ public class VentanaMaterias extends javax.swing.JFrame {
     public VentanaMaterias() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
- private void cargarTabla() {
+private void cargarTabla() {
     String[] columnas = {"Docente", "Materias Asignadas"};
     javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0) {
         @Override
@@ -27,12 +22,11 @@ public class VentanaMaterias extends javax.swing.JFrame {
         }
     };
 
-    String sql = "SELECT u.nombre AS docente, GROUP_CONCAT(m.nombre SEPARATOR ', ') AS materias " +
-                 "FROM usuarios u " +
-                 "LEFT JOIN docente_materias dm ON u.idUsuario = dm.docente_id " +
-                 "LEFT JOIN materias m ON dm.materia_id = m.id " +
-                 "WHERE u.rol = 'DOCENTE' " +
-                 "GROUP BY u.idUsuario";
+    String sql = "SELECT d.nombre AS docente, " +
+                 "(SELECT GROUP_CONCAT(m.nombre SEPARATOR ', ') FROM docente_materias dm " +
+                 "INNER JOIN materias m ON dm.materia_id = m.id " +
+                 "WHERE dm.docente_id = d.id) AS materias " +
+                 "FROM docentes d";
 
     try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql);
          java.sql.ResultSet rs = ps.executeQuery()) {
@@ -40,7 +34,7 @@ public class VentanaMaterias extends javax.swing.JFrame {
         while (rs.next()) {
             String docente = rs.getString("docente");
             String materias = rs.getString("materias");
-            if (materias == null) {
+            if (materias == null || materias.isEmpty()) {
                 materias = "Ninguna";
             }
             Object[] fila = {docente, materias};
@@ -55,21 +49,26 @@ public class VentanaMaterias extends javax.swing.JFrame {
 }
 
 
+
+
+
+
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaMaterias.class.getName());
 
     /**
      * Creates new form VentanaMaterias
      */
-  private java.sql.Connection conexion;
+     private java.sql.Connection conexion;
 
+    public VentanaMaterias(java.sql.Connection conexion) {
+        initComponents();
+        this.conexion = conexion;
+        cargarTabla();
+        cargarComboDocentes();
+        cargarComboMaterias();
+    }
 
-public VentanaMaterias(java.sql.Connection conexion) {
-    initComponents();
-    this.conexion = conexion;
-    cargarTabla();
-    cargarComboDocentes();
-    cargarComboMaterias();
-}
 
 
     /**
@@ -89,6 +88,7 @@ public VentanaMaterias(java.sql.Connection conexion) {
         botonEliminarMateria = new javax.swing.JButton();
         comboDocentes = new javax.swing.JComboBox<>();
         comboMaterias = new javax.swing.JComboBox<>();
+        botonregresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -116,37 +116,50 @@ public VentanaMaterias(java.sql.Connection conexion) {
         botonEliminarMateria.addActionListener(this::botonEliminarMateriaActionPerformed);
 
         comboDocentes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboDocentes.addActionListener(this::comboDocentesActionPerformed);
 
         comboMaterias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboMaterias.addActionListener(this::comboMateriasActionPerformed);
+
+        botonregresar.setText("Regresar");
+        botonregresar.addActionListener(this::botonregresarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(125, 125, 125)
+                        .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(botonAsignar)
-                                .addGap(52, 52, 52))))
+                                .addGap(197, 197, 197)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(8, 8, 8)))
+                        .addGap(61, 61, 61)
+                        .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(botonAsignar)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(botonEliminarMateria)
+                        .addGap(140, 140, 140))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(botonregresar)
                         .addContainerGap())))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(178, 178, 178)
-                .addComponent(botonEliminarMateria)
-                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,133 +170,105 @@ public VentanaMaterias(java.sql.Connection conexion) {
                     .addComponent(jLabel2))
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botonAsignar))
-                .addGap(31, 31, 31)
+                .addGap(33, 33, 33)
                 .addComponent(botonEliminarMateria)
-                .addGap(52, 52, 52)
+                .addGap(50, 50, 50)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botonregresar))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-private void cargarComboDocentes() {
-    comboDocentes.removeAllItems();
-    String sql = "SELECT nombre FROM usuarios WHERE rol = 'DOCENTE'";
-    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql);
-         java.sql.ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            comboDocentes.addItem(rs.getString("nombre"));
-        }
-    } catch (java.sql.SQLException e) {
-        System.out.println("Error al cargar docentes: " + e.getMessage());
-    }
-}
-
-private void cargarComboMaterias() {
-    comboMaterias.removeAllItems();
-    String sql = "SELECT nombre FROM materias";
-    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql);
-         java.sql.ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            comboMaterias.addItem(rs.getString("nombre"));
-        }
-    } catch (java.sql.SQLException e) {
-        System.out.println("Error al cargar materias: " + e.getMessage());
-    }
-}
 
 
 
     private void botonEliminarMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarMateriaActionPerformed
-int filaSeleccionada = tablaAsignacion.getSelectedRow();
-
-if (filaSeleccionada == -1) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una fila de la tabla.", "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
+int fila = tablaAsignacion.getSelectedRow();
+if (fila == -1) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un docente de la tabla");
     return;
 }
 
-String nombreDocente = tablaAsignacion.getValueAt(filaSeleccionada, 0).toString();
-String materiasTexto = tablaAsignacion.getValueAt(filaSeleccionada, 1).toString();
+String docente = tablaAsignacion.getValueAt(fila, 0).toString();
+String sql = "DELETE FROM docente_materias WHERE docente_id = (SELECT idUsuario FROM usuarios WHERE nombre = ? LIMIT 1)";
 
-if (materiasTexto.isEmpty()) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Este docente no tiene materias asignadas.", "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
-    return;
+int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, "¿Desasociar todas las materias de " + docente + "?", "Confirmar", javax.swing.JOptionPane.YES_NO_OPTION);
+if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql)) {
+        ps.setString(1, docente);
+        ps.executeUpdate();
+        javax.swing.JOptionPane.showMessageDialog(this, "Asignaciones eliminadas");
+        cargarTabla();
+    } catch (java.sql.SQLException e) {
+        System.out.println("Error: " + e.getMessage());
+    }
 }
 
-String[] opciones = materiasTexto.split(", ");
-String materiaAEliminar = (String) javax.swing.JOptionPane.showInputDialog(
-        this,
-        "Seleccione la materia que desea eliminar:",
-        "Modificar Materias",
-        javax.swing.JOptionPane.QUESTION_MESSAGE,
-        null,
-        opciones,
-        opciones[0]
-);
-
-if (materiaAEliminar != null) {
-    Usuario docente = Datos.getInstancia().getUsuarioPorNombre(nombreDocente);
-                if (docente != null) {
-                com.mycompany.sistemaacademico.MateriaDAO mDAO = new com.mycompany.sistemaacademico.MateriaDAO(com.mycompany.sistemaacademico.Datos.getConexion());
-                mDAO.eliminar(materiaAEliminar);
-                cargarTabla();
-                javax.swing.JOptionPane.showMessageDialog(this, "Materia eliminada con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            }
-
-}
         
 // TODO add your handling code here:
     }//GEN-LAST:event_botonEliminarMateriaActionPerformed
 
     private void botonAsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAsignarActionPerformed
-    try {
-    String nombreDocente = (String) comboDocentes.getSelectedItem();
-    String nombreMateria = (String) comboMaterias.getSelectedItem();
+if (comboDocentes.getSelectedItem() == null || comboMaterias.getSelectedItem() == null) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Por favor seleccione un docente y una materia");
+    return;
+}
 
-    if (nombreDocente == null || nombreMateria == null) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un docente y una materia.");
-        return;
-    }
+try {
+    String docenteSeleccionado = comboDocentes.getSelectedItem().toString();
+    int idDocente = Integer.parseInt(docenteSeleccionado.split(" - ")[0]);
 
-    int idDocente = -1;
-    int idMateria = -1;
+    String mS = comboMaterias.getSelectedItem().toString();
+    int idMateria = Integer.parseInt(mS.split(" - ")[0]);
 
-    String sqlDocente = "SELECT idUsuario FROM usuarios WHERE nombre = ? AND rol = 'DOCENTE'";
-    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sqlDocente)) {
-        ps.setString(1, nombreDocente);
-        try (java.sql.ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) idDocente = rs.getInt("idUsuario");
-        }
-    }
+    String sql = "INSERT INTO docente_materias (docente_id, materia_id) VALUES (?, ?)";
 
-    String sqlMateria = "SELECT id FROM materias WHERE nombre = ?";
-    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sqlMateria)) {
-        ps.setString(1, nombreMateria);
-        try (java.sql.ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) idMateria = rs.getInt("id");
-        }
-    }
-
-    if (idDocente != -1 && idMateria != -1) {
-        com.mycompany.sistemaacademico.MateriaDAO materiaDAO = new com.mycompany.sistemaacademico.MateriaDAO(this.conexion);
-        if (materiaDAO.asignarMateriaADocente(idDocente, idMateria)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Materia asignada con éxito.");
+    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql)) {
+        ps.setInt(1, idDocente);
+        ps.setInt(2, idMateria);
+        
+        if (ps.executeUpdate() > 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Materia asignada con éxito");
             cargarTabla();
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "El docente ya tiene asignada esta materia.");
         }
     }
+} catch (java.sql.SQLException e) {
+    javax.swing.JOptionPane.showMessageDialog(this, "La materia ya está asignada a este docente o hubo un error de BD: " + e.getMessage());
 } catch (Exception e) {
-    System.out.println("Error al asignar: " + e.getMessage());
+    javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar los códigos numéricos");
 }
 
 
 
         // TODO add your handling code here:
     }//GEN-LAST:event_botonAsignarActionPerformed
+
+    private void comboMateriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboMateriasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboMateriasActionPerformed
+
+    private void comboDocentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboDocentesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboDocentesActionPerformed
+
+    private void botonregresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonregresarActionPerformed
+                                             
+    try {
+        java.sql.Connection conActiva = Datos.getInstancia().getConexion();
+        VentanaAdministrador va = new VentanaAdministrador(conActiva);
+        va.setLocationRelativeTo(null);
+        va.setVisible(true);
+        this.dispose();
+    } catch (Exception e) {
+        System.out.println("Error al regresar al menu: " + e.getMessage());
+    }
+
+ // TODO add your handling code here:
+    }//GEN-LAST:event_botonregresarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -313,6 +298,7 @@ if (materiaAEliminar != null) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAsignar;
     private javax.swing.JButton botonEliminarMateria;
+    private javax.swing.JButton botonregresar;
     private javax.swing.JComboBox<String> comboDocentes;
     private javax.swing.JComboBox<String> comboMaterias;
     private javax.swing.JLabel jLabel1;
@@ -320,4 +306,35 @@ if (materiaAEliminar != null) {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tablaAsignacion;
     // End of variables declaration//GEN-END:variables
+ private void cargarComboDocentes() {
+    comboDocentes.removeAllItems();
+    String sql = "SELECT id, nombre FROM docentes";
+    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql);
+         java.sql.ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            comboDocentes.addItem(rs.getInt("id") + " - " + rs.getString("nombre"));
+        }
+    } catch (java.sql.SQLException e) {
+        System.out.println("Error al cargar docentes: " + e.getMessage());
+    }
 }
+
+
+private void cargarComboMaterias() {
+    comboMaterias.removeAllItems();
+    String sql = "SELECT id, nombre FROM materias";
+    try (java.sql.PreparedStatement ps = this.conexion.prepareStatement(sql);
+         java.sql.ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            comboMaterias.addItem(rs.getInt("id") + " - " + rs.getString("nombre"));
+        }
+    } catch (java.sql.SQLException e) {
+        System.out.println("Error al cargar materias: " + e.getMessage());
+    }
+}
+
+
+   
+
+}
+

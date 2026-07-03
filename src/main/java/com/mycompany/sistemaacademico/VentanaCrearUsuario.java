@@ -24,13 +24,13 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
     public VentanaCrearUsuario() {
         initComponents();
         DefaultComboBoxModel model = new DefaultComboBoxModel(Rol.values());
-        comboRol.setModel(model);
+        cbxRolUsuario.setModel(model);
     }
 
     public VentanaCrearUsuario(int id) {
         initComponents();
         DefaultComboBoxModel model = new DefaultComboBoxModel(Rol.values());
-        comboRol.setModel(model);
+        cbxRolUsuario.setModel(model);
 
         var conexion = Datos.getInstancia().getConexion();
         var dao = new UsuarioDAO(conexion);
@@ -45,9 +45,9 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
             return;
         }
 
-        textoUsuario.setText(usuario.getNombre());
-        textoPassword.setText(usuario.getPassword());
-        comboRol.setSelectedItem(usuario.getRol());
+        txtNombreUsuario.setText(usuario.getNombre());
+        txtPasswordUsuario.setText(usuario.getPassword());
+        cbxRolUsuario.setSelectedItem(usuario.getRol());
 
         labelTitulo.setText("Edite el usuario");
         botonCrear.setText("Editar");
@@ -66,17 +66,17 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
         labelTitulo = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        textoUsuario = new javax.swing.JTextField();
+        txtNombreUsuario = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        textoPassword = new javax.swing.JPasswordField();
+        txtPasswordUsuario = new javax.swing.JPasswordField();
         jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        comboRol = new javax.swing.JComboBox<>();
+        cbxRolUsuario = new javax.swing.JComboBox<>();
         jPanel6 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        textoImagen = new javax.swing.JTextField();
+        txtImagenURL = new javax.swing.JTextField();
         botonCargar = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         botonCrear = new javax.swing.JButton();
@@ -94,7 +94,7 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
 
         jLabel2.setText("Nombre de Usuario:");
         jPanel2.add(jLabel2);
-        jPanel2.add(textoUsuario);
+        jPanel2.add(txtNombreUsuario);
 
         jPanel1.add(jPanel2);
 
@@ -102,7 +102,7 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
 
         jLabel3.setText("Contraseña:");
         jPanel3.add(jLabel3);
-        jPanel3.add(textoPassword);
+        jPanel3.add(txtPasswordUsuario);
 
         jPanel1.add(jPanel3);
 
@@ -110,7 +110,7 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
 
         jLabel4.setText("Rol:");
         jPanel5.add(jLabel4);
-        jPanel5.add(comboRol);
+        jPanel5.add(cbxRolUsuario);
 
         jPanel1.add(jPanel5);
 
@@ -121,8 +121,8 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
 
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
 
-        textoImagen.setEditable(false);
-        jPanel7.add(textoImagen);
+        txtImagenURL.setEditable(false);
+        jPanel7.add(txtImagenURL);
 
         botonCargar.setText("Cargar");
         botonCargar.addActionListener(new java.awt.event.ActionListener() {
@@ -168,47 +168,39 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
 
     private void botonCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCrearActionPerformed
         // TODO add your handling code here:
-        var conexion = Datos.getInstancia().getConexion();
-        var dao = new UsuarioDAO(conexion);
-        String nombreUsuario = textoUsuario.getText();
-        String passwordUsuario = Datos.getInstancia().convertirCharAString(textoPassword.getPassword());
-        Rol rol = (Rol) comboRol.getSelectedItem();
-        String imagenURL = textoImagen.getText();
+     try {
+        String nombre = txtNombreUsuario.getText();
+        String password = String.valueOf(txtPasswordUsuario.getPassword());
+        String rolSeleccionado = cbxRolUsuario.getSelectedItem().toString();
+        String imagenURL = txtImagenURL.getText();
 
-        if (this.usuario == null) {
-            if (!dao.insertar(new Usuario(
-                    nombreUsuario,
-                    passwordUsuario,
-                    rol,
-                    imagenURL
-            ))) {
-                JOptionPane.showMessageDialog(null,
-                        "No se pudo crear el nuevo usuario",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
-        } else {
-            if (!dao.actualizar(new Usuario(
-                    this.usuario.getIdUsuario(),
-                    nombreUsuario,
-                    passwordUsuario,
-                    rol,
-                    imagenURL
-            ))) {
-                JOptionPane.showMessageDialog(null,
-                        "No se pudo editar el usuario",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
+        if (nombre.isEmpty() || password.isEmpty() || rolSeleccionado.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor llene todos los campos obligatorios");
+            return;
         }
 
-        VentanaControlUsuarios ventanaUsuarios = new VentanaControlUsuarios();
-        ventanaUsuarios.setVisible(true);
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setNombre(nombre);
+        nuevoUsuario.setPassword(password);
+        nuevoUsuario.setRol(Rol.valueOf(rolSeleccionado.toUpperCase()));
+        nuevoUsuario.setImagenURL(imagenURL);
 
-//        this.setVisible(false);
-        this.dispose();
+        java.sql.Connection con = Datos.getConexion();
+        UsuarioDAO usuarioDAO = new UsuarioDAO(con);
+
+        if (usuarioDAO.insertar(nuevoUsuario)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Usuario creado con éxito");
+            txtNombreUsuario.setText("");
+            txtPasswordUsuario.setText("");
+            txtImagenURL.setText("");
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar el usuario");
+        }
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error en los datos ingresados o variables mal nombradas");
+    
+}
+
     }//GEN-LAST:event_botonCrearActionPerformed
 
     private void botonCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCargarActionPerformed
@@ -225,7 +217,7 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             System.out.println("Archivo seleccionado: " + selectedFile.getName());
-            textoImagen.setText(selectedFile.getAbsolutePath());
+            txtImagenURL.setText(selectedFile.getAbsolutePath());
         } else {
             System.out.println("No se seleccionó ningún archivo."); 
         } 
@@ -269,7 +261,7 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonCargar;
     private javax.swing.JButton botonCrear;
-    private javax.swing.JComboBox<String> comboRol;
+    private javax.swing.JComboBox<String> cbxRolUsuario;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -282,8 +274,8 @@ public class VentanaCrearUsuario extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JLabel labelTitulo;
-    private javax.swing.JTextField textoImagen;
-    private javax.swing.JPasswordField textoPassword;
-    private javax.swing.JTextField textoUsuario;
+    private javax.swing.JTextField txtImagenURL;
+    private javax.swing.JTextField txtNombreUsuario;
+    private javax.swing.JPasswordField txtPasswordUsuario;
     // End of variables declaration//GEN-END:variables
 }

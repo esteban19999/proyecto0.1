@@ -71,7 +71,7 @@
                 <Property name="text" type="java.lang.String" value="Nombre de Usuario:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="textoUsuario">
+            <Component class="javax.swing.JTextField" name="txtNombreUsuario">
             </Component>
           </SubComponents>
         </Container>
@@ -88,7 +88,7 @@
                 <Property name="text" type="java.lang.String" value="Contrase&#xf1;a:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JPasswordField" name="textoPassword">
+            <Component class="javax.swing.JPasswordField" name="txtPasswordUsuario">
             </Component>
           </SubComponents>
         </Container>
@@ -105,7 +105,7 @@
                 <Property name="text" type="java.lang.String" value="Rol:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="comboRol">
+            <Component class="javax.swing.JComboBox" name="cbxRolUsuario">
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
@@ -129,7 +129,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTextField" name="textoImagen">
+                <Component class="javax.swing.JTextField" name="txtImagenURL">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                   </Properties>

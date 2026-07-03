@@ -21,12 +21,44 @@ public class VentanaPerfil extends javax.swing.JFrame {
         cargarInformacion();
     }
     
-    private void cargarInformacion(){
+            private void cargarInformacion(){
         var usuario = Datos.getInstancia().getUsuarioActual();
-        imagenPerfil.setIcon(new ImageIcon(usuario.getImagenURL()));
         labelNombre.setText(usuario.getNombre());
         labelRol.setText(usuario.getRol().toString());
+        
+        String rutaImagen = "";
+        
+        if (usuario.getImagenURL() != null && !usuario.getImagenURL().isEmpty()) {
+            rutaImagen = usuario.getImagenURL();
+        } else {
+            String rolTexto = usuario.getRol().toString().toUpperCase();
+            
+            if (rolTexto.contains("ADMIN")) {
+                rutaImagen = "/imagenes/admin.png";
+            } else if (rolTexto.contains("DOCENTE") || rolTexto.contains("PROFESOR")) {
+                rutaImagen = "/imagenes/docente.png";
+            } else if (rolTexto.contains("ESTUDIANTE") || rolTexto.contains("ALUMNO")) {
+                rutaImagen = "/imagenes/estudiante.png";
+            }
+        }
+        
+        try {
+            java.net.URL url = getClass().getResource(rutaImagen);
+            if (url != null) {
+                javax.swing.ImageIcon icon = new javax.swing.ImageIcon(url);
+                java.awt.Image img = icon.getImage().getScaledInstance(imagenPerfil.getWidth(), imagenPerfil.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                imagenPerfil.setIcon(new javax.swing.ImageIcon(img));
+            } else {
+                javax.swing.ImageIcon icon = new javax.swing.ImageIcon(rutaImagen);
+                java.awt.Image img = icon.getImage().getScaledInstance(imagenPerfil.getWidth(), imagenPerfil.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                imagenPerfil.setIcon(new javax.swing.ImageIcon(img));
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -42,6 +74,7 @@ public class VentanaPerfil extends javax.swing.JFrame {
         labelNombre = new javax.swing.JLabel();
         labelRol = new javax.swing.JLabel();
         imagenPerfil = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -59,6 +92,13 @@ public class VentanaPerfil extends javax.swing.JFrame {
         imagenPerfil.setMinimumSize(new java.awt.Dimension(200, 200));
         imagenPerfil.setPreferredSize(new java.awt.Dimension(200, 200));
 
+        jButton1.setText("Continuar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -67,16 +107,21 @@ public class VentanaPerfil extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(105, 105, 105))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(120, 120, 120)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelRol, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelNombre))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(54, Short.MAX_VALUE)
                 .addComponent(imagenPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(120, 120, 120)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(labelRol, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelNombre)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(107, 107, 107)
+                        .addComponent(jButton1)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -89,7 +134,9 @@ public class VentanaPerfil extends javax.swing.JFrame {
                 .addComponent(labelNombre)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addComponent(labelRol)
-                .addGap(42, 42, 42))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(13, 13, 13))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -111,6 +158,37 @@ public class VentanaPerfil extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+                                                
+                                              
+    com.mycompany.sistemaacademico.Usuario usuarioLogueado = Datos.getInstancia().getUsuarioActual();
+    java.sql.Connection conActiva = Datos.getConexion();
+    
+    if (usuarioLogueado != null) {
+        String rol = usuarioLogueado.getRol().toString();
+        this.dispose();
+
+        if (rol.equalsIgnoreCase("ADMIN") || rol.equalsIgnoreCase("ADMINISTRADOR")) {
+            VentanaAdministrador va = new VentanaAdministrador(conActiva);
+            va.setLocationRelativeTo(null);
+            va.setVisible(true);
+        } else if (rol.equalsIgnoreCase("ESTUDIANTE")) {
+            VentanaEstudiante ve = new VentanaEstudiante();
+            ve.setLocationRelativeTo(null);
+            ve.setVisible(true);
+        } else if (rol.equalsIgnoreCase("DOCENTE")) {
+            int idDoc = usuarioLogueado.getIdUsuario();
+            com.mycompany.sistemaacademico.VentanaDocente vd = new com.mycompany.sistemaacademico.VentanaDocente(conActiva, idDoc);
+            vd.setLocationRelativeTo(null);
+            vd.setVisible(true);
+        }
+    }
+
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -149,6 +227,7 @@ public class VentanaPerfil extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel imagenPerfil;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labelNombre;

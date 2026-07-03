@@ -4,9 +4,6 @@
  */
 package com.mycompany.sistemaacademico;
 
-import com.mycompany.sistemaacademico.*;
-
-
 
 /**
  *
@@ -96,51 +93,35 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
         }
     };
     
-    var usuariosGlobales = Datos.getInstancia().getUsuarios();
+    com.mycompany.sistemaacademico.UsuarioDAO uDAO = new com.mycompany.sistemaacademico.UsuarioDAO(com.mycompany.sistemaacademico.Datos.getConexion());
+    java.util.ArrayList<com.mycompany.sistemaacademico.Usuario> usuariosGlobales = uDAO.listar();
+
     for (Usuario u : usuariosGlobales) {
         if (u.getRol() == Rol.DOCENTE) {
-            String materiasTexto = String.join(", ", u.getMaterias());
-            Object[] fila = {u.getNombre(), materiasTexto};
+                       // Quitamos la línea de getMaterias y dejamos que agregue solo el nombre
+            Object[] fila = {u.getNombre(), "Ver en materias"};
             modelo.addRow(fila);
+
         }
     }
     
     tablaDocentes.setModel(modelo);
 }
-        private void botonMateriasActionPerformed(java.awt.event.ActionEvent evt) {                                              
+          private void botonMateriasActionPerformed(java.awt.event.ActionEvent evt) {                                              
         com.mycompany.sistemaacademico.VentanaMaterias vm = new com.mycompany.sistemaacademico.VentanaMaterias(this.conexion);
         vm.setLocationRelativeTo(this);
         vm.setVisible(true);
-    }                                             
+    } 
+                                          
 
-    private void botonDocentesActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        segundo_modulo.VentanaVerDocentes vvd = new segundo_modulo.VentanaVerDocentes(this.conexion);
+       private void botonDocentesActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        com.mycompany.sistemaacademico.VentanaVerDocentes vvd = new com.mycompany.sistemaacademico.VentanaVerDocentes(this.conexion);
         vvd.setLocationRelativeTo(this);
         vvd.setVisible(true);
-    }                                             
+    } 
+                                           
 
 
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new VentanaVerDocentes(null).setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

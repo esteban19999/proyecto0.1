@@ -1,27 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.sistemaacademico;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-/**
- *
- * @author -PC
- */
 public class Datos {
     public static java.sql.Connection conexion;
 
-public static java.sql.Connection getConexion() {
-    return conexion;
-}
+    public static java.sql.Connection getConexion() {
+        return conexion;
+    }
 
     private Usuario usuarioActual;
     private static Datos instancia;
-    
     
     private final String URL = "jdbc:mysql://localhost:3306/bd";
     private final String USER = "user";
@@ -42,8 +36,6 @@ public static java.sql.Connection getConexion() {
         if(instancia == null) instancia = new Datos();
         return instancia;
     }
-
-   
 
     public Usuario getUsuarioActual() {
         return usuarioActual;
@@ -78,5 +70,35 @@ public static java.sql.Connection getConexion() {
             resultado += c;
         }
         return resultado;    
+    }
+
+    public ArrayList<String[]> obtenerTodosLosDocentes() {
+        ArrayList<String[]> lista = new ArrayList<>();
+        String sql = "SELECT id, nombre FROM docentes";
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                String[] docente = {String.valueOf(rs.getInt("id")), rs.getString("nombre")};
+                lista.add(docente);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    public ArrayList<String[]> obtenerTodosLosEstudiantes() {
+        ArrayList<String[]> lista = new ArrayList<>();
+        String sql = "SELECT id, nombre FROM estudiantes";
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                String[] estudiante = {String.valueOf(rs.getInt("id")), rs.getString("nombre")};
+                lista.add(estudiante);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return lista;
     }
 }

@@ -74,6 +74,11 @@ public class VentanaAdministrador extends javax.swing.JFrame {
         jPanel2.add(botonPerfil);
 
         botonSalir.setText("Salir");
+        botonSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonSalirActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Gestionar Materias");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -153,21 +158,36 @@ ventanaPerfil.setVisible(true);
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        try {
-    com.mycompany.sistemaacademico.VentanaMaterias moduloMaterias = new com.mycompany.sistemaacademico.VentanaMaterias(this.conexion);
-    moduloMaterias.setLocationRelativeTo(null);
-    moduloMaterias.setVisible(true);
-    this.setVisible(false);
-} catch (Exception e) {
-    System.out.println("Error: " + e.getMessage());
+    
+    try {
+        java.sql.Connection conActiva = com.mycompany.sistemaacademico.Datos.getInstancia().getConexion();
+        
+        com.mycompany.sistemaacademico.VentanaMaterias moduloMaterias = new com.mycompany.sistemaacademico.VentanaMaterias(conActiva);
+        moduloMaterias.setLocationRelativeTo(null);
+        moduloMaterias.setVisible(true);
+        this.setVisible(false);
+    } catch (Exception e) {
+        System.out.println("Error: " + e.getMessage());
+    
 }
-        this.dispose();
-com.mycompany.sistemaacademico.VentanaAdministrador menuPrincipal = new com.mycompany.sistemaacademico.VentanaAdministrador();
-menuPrincipal.setLocationRelativeTo(null);
-menuPrincipal.setVisible(true);
+
 
 
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void botonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSalirActionPerformed
+                                                
+    try {
+        com.mycompany.sistemaacademico.VentanaIngreso login = new com.mycompany.sistemaacademico.VentanaIngreso();
+        login.setLocationRelativeTo(null);
+        login.setVisible(true);
+        this.dispose();
+    } catch (Exception e) {
+        System.out.println("Error al cerrar sesion admin: " + e.getMessage());
+    
+}
+  // TODO add your handling code here:
+    }//GEN-LAST:event_botonSalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -199,7 +219,8 @@ menuPrincipal.setVisible(true);
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VentanaAdministrador(null).setVisible(true);
+                new VentanaAdministrador(com.mycompany.sistemaacademico.Datos.getConexion()).setVisible(true);
+
             }
         });
     }
