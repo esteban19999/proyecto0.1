@@ -13,11 +13,17 @@ import java.sql.SQLException;
  * @author -PC
  */
 public class Datos {
+    public static java.sql.Connection conexion;
+
+public static java.sql.Connection getConexion() {
+    return conexion;
+}
+
     private Usuario usuarioActual;
     private static Datos instancia;
-    private Connection conexion;
     
-    private final String URL = "jdbc:mysql://localhost:3306/db";
+    
+    private final String URL = "jdbc:mysql://localhost:3306/bd";
     private final String USER = "user";
     private final String PASSWORD = "1234";    
 
@@ -37,9 +43,7 @@ public class Datos {
         return instancia;
     }
 
-    public Connection getConexion() {
-        return conexion;
-    }
+   
 
     public Usuario getUsuarioActual() {
         return usuarioActual;

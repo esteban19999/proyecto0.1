@@ -98,28 +98,54 @@ public class VentanaIngreso extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonIniciarActionPerformed
-        // TODO add your handling code here:
-        String nombreUsuario = textoUsuario.getText();
+        // TODO add your handling code here:                                 
+                     
+        String nombreUsuario = textoUsuario.getText().trim();
         char[] passwordUsuario = textoPassword.getPassword();
-        
+
         String res = Datos.getInstancia().validarCredenciales(nombreUsuario, passwordUsuario);
-        if(res.isEmpty()){
-            JOptionPane.showMessageDialog(
-                    null, 
-                    "Ingreso Exitoso", 
-                    "Ingreso Exitoso", 
-                    JOptionPane.INFORMATION_MESSAGE
-                    );
-            VentanaAdministrador ventanaAdministrador = new VentanaAdministrador();
-            ventanaAdministrador.setVisible(true);
+
+        if (res.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ingreso Exitoso", "Ingreso Exitoso", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            
+            com.mycompany.sistemaacademico.UsuarioDAO uDAO = new com.mycompany.sistemaacademico.UsuarioDAO(com.mycompany.sistemaacademico.Datos.getConexion());
+            com.mycompany.sistemaacademico.Usuario usuarioLogueado = null;
+            
+            for (com.mycompany.sistemaacademico.Usuario u : uDAO.listar()) {
+                if (u.getNombre().equalsIgnoreCase(nombreUsuario)) {
+                    usuarioLogueado = u;
+                    break;
+                }
+            }
+
+            if (usuarioLogueado != null) {
+                String rol = usuarioLogueado.getRol().toString();
+                this.dispose();
+
+                if (rol.equalsIgnoreCase("ADMIN") || rol.equalsIgnoreCase("ADMINISTRADOR")) {
+                    VentanaAdministrador va = new VentanaAdministrador();
+                    va.setLocationRelativeTo(null);
+                    va.setVisible(true);
+                } else if (rol.equalsIgnoreCase("ESTUDIANTE")) {
+                    VentanaEstudiante ve = new VentanaEstudiante();
+                    ve.setLocationRelativeTo(null);
+                    ve.setVisible(true);
+                } else if (rol.equalsIgnoreCase("DOCENTE")) {
+                    java.sql.Connection conActiva = com.mycompany.sistemaacademico.Datos.getConexion();
+                    int idDoc = usuarioLogueado.getId();
+                    
+                    com.mycompany.sistemaacademico.segundo_modulo.VentanaDocente vd = new com.mycompany.sistemaacademico.segundo_modulo.VentanaDocente(conActiva, idDoc);
+                    vd.setLocationRelativeTo(null);
+                    vd.setVisible(true);
+                }
+            }
         } else {
-            JOptionPane.showMessageDialog(
-                    null, 
-                    res, 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE
-                    );            
+            javax.swing.JOptionPane.showMessageDialog(this, res, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+                                             
+
+                                         
+
     }//GEN-LAST:event_botonIniciarActionPerformed
 
     /**

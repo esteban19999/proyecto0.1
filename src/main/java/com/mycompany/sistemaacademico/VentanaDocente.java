@@ -4,18 +4,56 @@
  */
 package com.mycompany.sistemaacademico;
 
-/**
- *
- * @author -PC
- */
+import com.mycompany.sistemaacademico.*;
+
+
 public class VentanaDocente extends javax.swing.JFrame {
 
     /**
      * Creates new form VentanaDocente
      */
-    public VentanaDocente() {
-        initComponents();
+  private java.sql.Connection conexion;
+private int idDocente;
+private void cargarTablaMateriasDocente() {
+    String[] columnas = {"Código", "Nombre de la Materia"};
+    javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0);
+    
+    com.mycompany.sistemaacademico.MateriaDAO mDAO = new com.mycompany.sistemaacademico.MateriaDAO(this.conexion);
+    java.util.ArrayList<String[]> materias = mDAO.obtenerMateriasPorDocente(this.idDocente);
+    
+    for (String[] m : materias) {
+        modelo.addRow(m);
     }
+    
+    
+    tablaMaterias.setModel(modelo); 
+}
+
+
+public VentanaDocente(java.sql.Connection conexion, int idDocente) {
+    initComponents();
+    this.conexion = conexion;
+    this.idDocente = idDocente;
+    cargarTablaMateriasDocente();
+}
+
+}
+private void cargarMateriasAsignadas() {
+    String[] columnas = {"Mis Materias Asignadas"};
+    javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    var materias = Datos.getInstancia().getUsuarioActual().getMaterias();
+    for (String m : materias) {
+        Object[] fila = {m};
+        modelo.addRow(fila);
+    }
+    tablaMateriasDocente.setModel(modelo);
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,8 +68,10 @@ public class VentanaDocente extends javax.swing.JFrame {
         labelUsuario = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         botonEstudiantes = new javax.swing.JButton();
-        botonMaterias = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
+        botonNiveles = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaMateriasDocente = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -42,28 +82,41 @@ public class VentanaDocente extends javax.swing.JFrame {
         botonEstudiantes.setText("Estudiantes");
         jPanel2.add(botonEstudiantes);
 
-        botonMaterias.setText("Materias");
-        jPanel2.add(botonMaterias);
-
         botonSalir.setText("Salir");
+        jPanel2.add(botonSalir);
+
+        botonNiveles.setText("Niveles");
+        jPanel2.add(botonNiveles);
+
+        tablaMateriasDocente.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaMateriasDocente);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(labelUsuario))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(99, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(113, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(219, 219, 219)
-                .addComponent(botonSalir)
+                .addContainerGap()
+                .addComponent(labelUsuario)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 43, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(105, 105, 105))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -72,9 +125,8 @@ public class VentanaDocente extends javax.swing.JFrame {
                 .addComponent(labelUsuario)
                 .addGap(14, 14, 14)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-                .addComponent(botonSalir)
-                .addGap(44, 44, 44))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -100,6 +152,7 @@ public class VentanaDocente extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -134,10 +187,12 @@ public class VentanaDocente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonEstudiantes;
-    private javax.swing.JButton botonMaterias;
+    private javax.swing.JButton botonNiveles;
     private javax.swing.JButton botonSalir;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelUsuario;
+    private javax.swing.JTable tablaMateriasDocente;
     // End of variables declaration//GEN-END:variables
-}
+

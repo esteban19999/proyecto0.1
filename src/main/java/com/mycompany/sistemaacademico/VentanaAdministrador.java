@@ -9,11 +9,13 @@ package com.mycompany.sistemaacademico;
  * @author -PC
  */
 public class VentanaAdministrador extends javax.swing.JFrame {
+    private java.sql.Connection conexion;
+
 
     /**
      * Creates new form VentanaAdministrador
      */
-    public VentanaAdministrador() {
+    public VentanaAdministrador(java.sql.Connection conexion) {
         initComponents();
         
         String nombreUsuario = Datos.getInstancia().getUsuarioActual().getNombre();
@@ -38,6 +40,7 @@ public class VentanaAdministrador extends javax.swing.JFrame {
         botonDocentes = new javax.swing.JButton();
         botonPerfil = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -72,6 +75,13 @@ public class VentanaAdministrador extends javax.swing.JFrame {
 
         botonSalir.setText("Salir");
 
+        jButton1.setText("Gestionar Materias");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -87,7 +97,9 @@ public class VentanaAdministrador extends javax.swing.JFrame {
                 .addContainerGap(113, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(botonSalir)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1)
+                    .addComponent(botonSalir))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -97,7 +109,9 @@ public class VentanaAdministrador extends javax.swing.JFrame {
                 .addComponent(labelUsuario)
                 .addGap(14, 14, 14)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(33, 33, 33)
                 .addComponent(botonSalir)
                 .addGap(34, 34, 34))
         );
@@ -130,9 +144,30 @@ public class VentanaAdministrador extends javax.swing.JFrame {
 
     private void botonPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPerfilActionPerformed
         // TODO add your handling code here:
-        VentanaPerfil ventanaPerfil = new VentanaPerfil();
-        ventanaPerfil.setVisible(true);
+       // Reemplaza el código del botón Perfil por este:
+VentanaPerfil ventanaPerfil = new VentanaPerfil();
+ventanaPerfil.setLocationRelativeTo(this);
+ventanaPerfil.setVisible(true);
+
     }//GEN-LAST:event_botonPerfilActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        try {
+    com.mycompany.sistemaacademico.VentanaMaterias moduloMaterias = new com.mycompany.sistemaacademico.VentanaMaterias(this.conexion);
+    moduloMaterias.setLocationRelativeTo(null);
+    moduloMaterias.setVisible(true);
+    this.setVisible(false);
+} catch (Exception e) {
+    System.out.println("Error: " + e.getMessage());
+}
+        this.dispose();
+com.mycompany.sistemaacademico.VentanaAdministrador menuPrincipal = new com.mycompany.sistemaacademico.VentanaAdministrador();
+menuPrincipal.setLocationRelativeTo(null);
+menuPrincipal.setVisible(true);
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -164,7 +199,7 @@ public class VentanaAdministrador extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VentanaAdministrador().setVisible(true);
+                new VentanaAdministrador(null).setVisible(true);
             }
         });
     }
@@ -176,6 +211,7 @@ public class VentanaAdministrador extends javax.swing.JFrame {
     private javax.swing.JButton botonPerfil;
     private javax.swing.JButton botonSalir;
     private javax.swing.JButton botonUsuarios;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelUsuario;
