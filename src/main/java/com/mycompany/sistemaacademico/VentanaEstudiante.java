@@ -9,13 +9,17 @@ package com.mycompany.sistemaacademico;
  * @author -PC
  */
 public class VentanaEstudiante extends javax.swing.JFrame {
+    
+    private java.sql.Connection conexion;
+    private int idEstudiante;
 
-    /**
-     * Creates new form VentanaEstudiante
-     */
-    public VentanaEstudiante() {
+    public VentanaEstudiante(java.sql.Connection conexion, int idEstudiante) {
         initComponents();
+        this.conexion = conexion;
+        this.idEstudiante = idEstudiante;
     }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -39,9 +43,19 @@ public class VentanaEstudiante extends javax.swing.JFrame {
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 10));
 
         botonMaterias.setText("Materias");
+        botonMaterias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonMateriasActionPerformed(evt);
+            }
+        });
         jPanel2.add(botonMaterias);
 
         botonSalir.setText("Salir");
+        botonSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonSalirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -93,6 +107,35 @@ public class VentanaEstudiante extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void botonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSalirActionPerformed
+                                              
+    try {
+        com.mycompany.sistemaacademico.VentanaIngreso login = new com.mycompany.sistemaacademico.VentanaIngreso();
+        login.setLocationRelativeTo(null);
+        login.setVisible(true);
+        this.dispose();
+    } catch (Exception e) {
+        System.out.println("Error al cerrar sesión: " + e.getMessage());
+    }
+
+    // TODO add your handling code here:
+    }//GEN-LAST:event_botonSalirActionPerformed
+
+    private void botonMateriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonMateriasActionPerformed
+                                                  
+    try {
+        // Creamos y abrimos la ventana donde el alumno ve sus materias matriculadas
+        VentanaMateriasEstudiante vme = new VentanaMateriasEstudiante(this.conexion, this.idEstudiante);
+        vme.setLocationRelativeTo(null);
+        vme.setVisible(true);
+        this.setVisible(false);
+    } catch (Exception e) {
+        System.out.println("Error al abrir materias: " + e.getMessage());
+    
+}
+   // TODO add your handling code here:
+    }//GEN-LAST:event_botonMateriasActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -123,7 +166,8 @@ public class VentanaEstudiante extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VentanaEstudiante().setVisible(true);
+                new VentanaEstudiante(com.mycompany.sistemaacademico.Datos.getConexion(), 0).setVisible(true);
+
             }
         });
     }
@@ -135,4 +179,5 @@ public class VentanaEstudiante extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelUsuario;
     // End of variables declaration//GEN-END:variables
+
 }

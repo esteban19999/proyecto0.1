@@ -36,10 +36,9 @@ public class VentanaAdministrador extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         botonEstudiantes = new javax.swing.JButton();
         botonUsuarios = new javax.swing.JButton();
-        botonMaterias = new javax.swing.JButton();
         botonDocentes = new javax.swing.JButton();
-        botonPerfil = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
+        botonPerfil = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -59,19 +58,13 @@ public class VentanaAdministrador extends javax.swing.JFrame {
         });
         jPanel2.add(botonUsuarios);
 
-        botonMaterias.setText("Materias");
-        jPanel2.add(botonMaterias);
-
         botonDocentes.setText("Docentes");
-        jPanel2.add(botonDocentes);
-
-        botonPerfil.setText("Mi Perfil");
-        botonPerfil.addActionListener(new java.awt.event.ActionListener() {
+        botonDocentes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonPerfilActionPerformed(evt);
+                botonDocentesActionPerformed(evt);
             }
         });
-        jPanel2.add(botonPerfil);
+        jPanel2.add(botonDocentes);
 
         botonSalir.setText("Salir");
         botonSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -80,7 +73,14 @@ public class VentanaAdministrador extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Gestionar Materias");
+        botonPerfil.setText("Mi Perfil");
+        botonPerfil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPerfilActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Gestionar Materias Docentes");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -101,10 +101,14 @@ public class VentanaAdministrador extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(113, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
-                    .addComponent(botonSalir))
+                .addGap(30, 30, 30)
+                .addComponent(botonPerfil)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botonSalir)
+                .addGap(46, 46, 46))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(115, 115, 115)
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -114,10 +118,12 @@ public class VentanaAdministrador extends javax.swing.JFrame {
                 .addComponent(labelUsuario)
                 .addGap(14, 14, 14)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addGap(33, 33, 33)
-                .addComponent(botonSalir)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(botonSalir)
+                    .addComponent(botonPerfil))
                 .addGap(34, 34, 34))
         );
 
@@ -189,6 +195,22 @@ ventanaPerfil.setVisible(true);
   // TODO add your handling code here:
     }//GEN-LAST:event_botonSalirActionPerformed
 
+    private void botonDocentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonDocentesActionPerformed
+                                                     
+    try {
+        java.sql.Connection conActiva = com.mycompany.sistemaacademico.Datos.getInstancia().getConexion();
+        com.mycompany.sistemaacademico.VentanaVerDocentes moduloVerDocentes = new com.mycompany.sistemaacademico.VentanaVerDocentes(conActiva);
+        moduloVerDocentes.setLocationRelativeTo(null);
+        moduloVerDocentes.setVisible(true);
+        this.dispose();
+    } catch (Exception e) {
+        System.out.println("Error al abrir modulo de visualizacion de docentes: " + e.getMessage());
+    }
+
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonDocentesActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -228,7 +250,6 @@ ventanaPerfil.setVisible(true);
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonDocentes;
     private javax.swing.JButton botonEstudiantes;
-    private javax.swing.JButton botonMaterias;
     private javax.swing.JButton botonPerfil;
     private javax.swing.JButton botonSalir;
     private javax.swing.JButton botonUsuarios;

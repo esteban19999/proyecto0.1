@@ -14,6 +14,7 @@ public class VentanaDocente extends javax.swing.JFrame {
         this.conexion = conexion;
         this.idDocente = idDocente;
         cargarMateriasDocente();
+        
     }
 
     private void cargarMateriasDocente() {
@@ -157,4 +158,8 @@ public class VentanaDocente extends javax.swing.JFrame {
     private javax.swing.JLabel labelUsuario;
     private javax.swing.JTable tablaMateriasDocente;
     // End of variables declaration//GEN-END:variables
+
+
+
+
 }

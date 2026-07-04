@@ -22,6 +22,7 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
         initComponents();
         this.conexion = conexion;
         cargarTablaDocentes();
+        
     }
 
     /**
@@ -36,6 +37,7 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaDocentes = new javax.swing.JTable();
+        botonRegresarAdmin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -54,6 +56,9 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaDocentes);
 
+        botonRegresarAdmin.setText("Regresar");
+        botonRegresarAdmin.addActionListener(this::botonRegresarAdminActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -61,12 +66,18 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(164, 164, 164)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(164, 164, 164)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 13, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(botonRegresarAdmin)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -75,38 +86,64 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(botonRegresarAdmin)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void botonRegresarAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRegresarAdminActionPerformed
+                                                         
+    try {
+        java.sql.Connection conActiva = com.mycompany.sistemaacademico.Datos.getInstancia().getConexion();
+        com.mycompany.sistemaacademico.VentanaAdministrador va = new com.mycompany.sistemaacademico.VentanaAdministrador(conActiva);
+        va.setLocationRelativeTo(null);
+        va.setVisible(true);
+        this.dispose();
+    } catch (Exception e) {
+        System.out.println("Error al regresar al menú principal: " + e.getMessage());
+    }
+
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonRegresarAdminActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    private void cargarTablaDocentes() {
-    String[] columnas = {"Nombre del Docente", "Materias Asignadas"};
+  private void cargarTablaDocentes() {
+    String[] columnas = {"ID", "Nombre", "Correo Electrónico"};
     javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
         }
     };
-    
-    com.mycompany.sistemaacademico.UsuarioDAO uDAO = new com.mycompany.sistemaacademico.UsuarioDAO(com.mycompany.sistemaacademico.Datos.getConexion());
-    java.util.ArrayList<com.mycompany.sistemaacademico.Usuario> usuariosGlobales = uDAO.listar();
 
-    for (Usuario u : usuariosGlobales) {
-        if (u.getRol() == Rol.DOCENTE) {
-                       // Quitamos la línea de getMaterias y dejamos que agregue solo el nombre
-            Object[] fila = {u.getNombre(), "Ver en materias"};
+    String sql = "SELECT id, nombre, correo FROM docentes";
+    java.sql.Connection con = com.mycompany.sistemaacademico.Datos.getInstancia().getConexion();
+
+    try (java.sql.PreparedStatement ps = con.prepareStatement(sql);
+         java.sql.ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Object[] fila = {
+                rs.getInt("id"),
+                rs.getString("nombre"),
+                rs.getString("correo")
+            };
             modelo.addRow(fila);
-
         }
+
+    } catch (java.sql.SQLException e) {
+        System.out.println("Error al cargar la tabla de docentes: " + e.getMessage());
     }
-    
+
     tablaDocentes.setModel(modelo);
 }
+
           private void botonMateriasActionPerformed(java.awt.event.ActionEvent evt) {                                              
         com.mycompany.sistemaacademico.VentanaMaterias vm = new com.mycompany.sistemaacademico.VentanaMaterias(this.conexion);
         vm.setLocationRelativeTo(this);
@@ -124,8 +161,12 @@ public class VentanaVerDocentes extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonRegresarAdmin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tablaDocentes;
     // End of variables declaration//GEN-END:variables
+
+   
+   
 }

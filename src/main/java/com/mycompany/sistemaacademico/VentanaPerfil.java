@@ -112,15 +112,15 @@ public class VentanaPerfil extends javax.swing.JFrame {
                 .addComponent(imagenPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(120, 120, 120)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(labelRol, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelNombre)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(107, 107, 107)
-                        .addComponent(jButton1)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelRol, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(120, 120, 120)
+                            .addComponent(labelNombre))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(107, 107, 107)
+                            .addComponent(jButton1))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -132,9 +132,9 @@ public class VentanaPerfil extends javax.swing.JFrame {
                 .addComponent(imagenPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(labelNombre)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(labelRol)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelRol, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
                 .addGap(13, 13, 13))
         );
@@ -163,28 +163,35 @@ public class VentanaPerfil extends javax.swing.JFrame {
         // TODO add your handling code here:
                                                 
                                               
-    com.mycompany.sistemaacademico.Usuario usuarioLogueado = Datos.getInstancia().getUsuarioActual();
-    java.sql.Connection conActiva = Datos.getConexion();
-    
-    if (usuarioLogueado != null) {
-        String rol = usuarioLogueado.getRol().toString();
-        this.dispose();
+                                            
+    try {
+        com.mycompany.sistemaacademico.Usuario usuarioLogueado = Datos.getInstancia().getUsuarioActual();
+        java.sql.Connection conActiva = Datos.getInstancia().getConexion();
+        
+        if (usuarioLogueado != null) {
+            String rol = usuarioLogueado.getRol().toString();
+            this.dispose();
 
-        if (rol.equalsIgnoreCase("ADMIN") || rol.equalsIgnoreCase("ADMINISTRADOR")) {
-            VentanaAdministrador va = new VentanaAdministrador(conActiva);
-            va.setLocationRelativeTo(null);
-            va.setVisible(true);
-        } else if (rol.equalsIgnoreCase("ESTUDIANTE")) {
-            VentanaEstudiante ve = new VentanaEstudiante();
-            ve.setLocationRelativeTo(null);
-            ve.setVisible(true);
-        } else if (rol.equalsIgnoreCase("DOCENTE")) {
-            int idDoc = usuarioLogueado.getIdUsuario();
-            com.mycompany.sistemaacademico.VentanaDocente vd = new com.mycompany.sistemaacademico.VentanaDocente(conActiva, idDoc);
-            vd.setLocationRelativeTo(null);
-            vd.setVisible(true);
+            if (rol.equalsIgnoreCase("ADMIN") || rol.equalsIgnoreCase("ADMINISTRADOR")) {
+                VentanaAdministrador va = new VentanaAdministrador(conActiva);
+                va.setLocationRelativeTo(null);
+                va.setVisible(true);
+            } else if (rol.equalsIgnoreCase("ESTUDIANTE")) {
+                int idEst = usuarioLogueado.getIdUsuario();
+                VentanaEstudiante ve = new VentanaEstudiante(conActiva, idEst);
+                ve.setLocationRelativeTo(null);
+                ve.setVisible(true);
+            } else if (rol.equalsIgnoreCase("DOCENTE")) {
+                int idDoc = usuarioLogueado.getIdUsuario();
+                com.mycompany.sistemaacademico.VentanaDocente vd = new com.mycompany.sistemaacademico.VentanaDocente(conActiva, idDoc);
+                vd.setLocationRelativeTo(null);
+                vd.setVisible(true);
+            }
         }
+    } catch (Exception e) {
+        System.out.println("Error en la redirección de perfiles: " + e.getMessage());
     }
+
 
 
 
