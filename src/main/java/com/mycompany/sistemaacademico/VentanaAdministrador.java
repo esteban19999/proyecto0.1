@@ -10,6 +10,7 @@ package com.mycompany.sistemaacademico;
  */
 public class VentanaAdministrador extends javax.swing.JFrame {
     private java.sql.Connection conexion;
+    
 
 
     /**
@@ -40,6 +41,7 @@ public class VentanaAdministrador extends javax.swing.JFrame {
         botonSalir = new javax.swing.JButton();
         botonPerfil = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -87,6 +89,13 @@ public class VentanaAdministrador extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Gestionar materias Estudiantes");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -108,7 +117,9 @@ public class VentanaAdministrador extends javax.swing.JFrame {
                 .addGap(46, 46, 46))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(115, 115, 115)
-                .addComponent(jButton1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -120,7 +131,9 @@ public class VentanaAdministrador extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botonSalir)
                     .addComponent(botonPerfil))
@@ -211,6 +224,20 @@ ventanaPerfil.setVisible(true);
         // TODO add your handling code here:
     }//GEN-LAST:event_botonDocentesActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+  try {
+    java.sql.Connection conActiva = com.mycompany.sistemaacademico.Datos.getInstancia().getConexion();
+    com.mycompany.sistemaacademico.VentanaMateriasEstudiante moduloAsignarEst = new com.mycompany.sistemaacademico.VentanaMateriasEstudiante(conActiva, 1);
+    moduloAsignarEst.setLocationRelativeTo(null);
+    moduloAsignarEst.setVisible(true);
+    this.dispose();
+} catch (Exception e) {
+    System.out.println("Error al abrir asignacion de materias a estudiante: " + e.getMessage());
+}
+
+    // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -254,6 +281,7 @@ ventanaPerfil.setVisible(true);
     private javax.swing.JButton botonSalir;
     private javax.swing.JButton botonUsuarios;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelUsuario;
